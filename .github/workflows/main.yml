@@ -1,0 +1,62 @@
+
+on:
+ 
+  workflow_dispatch:
+    
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  azure-login:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Check Files
+        run: |
+          pwd
+          ls -la
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          
+          #client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          #tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          #subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          #creds: ${{ secrets.AZURE_CREDENTIALS}}
+          
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      
+      # - name: Terraform Format
+      #   run: terraform fmt
+
+      - name: Terraform Init
+        run: terraform init
+
+      # - name: Terraform State
+      #   run: terraform state list
+
+      # - name: Destroy Resource
+      #   run: terraform destroy -auto-approve
+          
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Pan
+        run: terraform plan 
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+      - name: Terraform State
+        run: terraform state list
